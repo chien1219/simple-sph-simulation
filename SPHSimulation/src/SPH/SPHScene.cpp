@@ -208,7 +208,7 @@ void SPHScene::draw(const Camera & camera)
 	glDepthFunc(GL_LESS);
 	glEnable(GL_DEPTH_TEST);
 
-	grid->draw(camera.getViewProjection());
+//	grid->draw(camera.getViewProjection());
 //	coords->draw(camera.getViewProjection());
 			
 	marchingTimer.resume();	

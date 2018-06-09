@@ -338,14 +338,14 @@ void SPHSystem3d::applySurfaceForces( SPHParticle3d& particle )
 			particle.force += (ksgradient( rvec ) * pressure * particle.volume)*0.5f;
 			if( _isnan(particle.force.x) == 1 ) 	
 			{
-				cout << "2";
+				//cout << "2";
 			}
 			// viscosity
 			//particle.force -= ( particle.velocity ) * (kvlaplacian( sqrtf(rSq) ) * viscosityConstant * particleMass / particle.density);
 			particle.force += ( particle.velocity ) * (kvlaplacian( sqrtf(rSq) ) * viscosityConstant * particle.volume);
 			if( _isnan(particle.force.x) == 1 ) 	
 			{
-				cout << "3";
+				//cout << "3";
 				particle.force = oldForce;
 			}
 		}
