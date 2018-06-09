@@ -15,7 +15,6 @@
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]eleases/
-*/[Rr]elease/
 x64/
 x86/
 bld/
@@ -60,6 +59,7 @@ artifacts/
 *.tli
 *.tlh
 *.tmp
+*.tlog
 *.tmp_proj
 *.log
 *.vspscc
