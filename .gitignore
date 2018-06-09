@@ -15,7 +15,7 @@
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]eleases/
-*.tlog/
+/[Rr]elease/
 x64/
 x86/
 bld/
@@ -44,7 +44,6 @@ dlldata.c
 project.lock.json
 artifacts/
 
-*.db
 *_i.c
 *_p.c
 *_i.h
