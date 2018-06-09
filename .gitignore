@@ -15,6 +15,7 @@
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]eleases/
+*.tlog/
 x64/
 x86/
 bld/
