@@ -46,7 +46,6 @@ void LearningWindowManager::windowWillRun()
 
 	glDepthFunc(GL_LESS);
 	glEnable(GL_DEPTH_TEST);
-
 	addScene(new SPHScene());
 }
 

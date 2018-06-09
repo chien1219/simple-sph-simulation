@@ -23,9 +23,9 @@ void main(void)
 	vec3 pp = (MVP * gPosition).xyz;
 
     vec3 grad = vec3(
-		texture(Data, (p+vec3(DataStep.x, 0, 0))).a - texture3D(Data, (p+vec3(-DataStep.x, 0, 0))).a, 
-		texture(Data, (p+vec3(0, DataStep.y, 0))).a - texture3D(Data, (p+vec3(0, -DataStep.y, 0))).a, 
-		texture(Data, (p+vec3(0,0,DataStep.z))).a - texture3D(Data, (p+vec3(0,0,-DataStep.z))).a );
+		texture(Data, (p+vec3(DataStep.x, 0, 0))).a - texture(Data, (p+vec3(-DataStep.x, 0, 0))).a, 
+		texture(Data, (p+vec3(0, DataStep.y, 0))).a - texture(Data, (p+vec3(0, -DataStep.y, 0))).a, 
+		texture(Data, (p+vec3(0,0,DataStep.z))).a - texture(Data, (p+vec3(0,0,-DataStep.z))).a );
         
     vec3 lightVec=normalize(LightPosition-p);
     

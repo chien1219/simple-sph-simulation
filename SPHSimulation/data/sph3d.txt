@@ -1,7 +1,7 @@
 [grid]
-width 10.1
-height 10.1
-depth 10.1
+width 10
+height 10
+depth 10
 surfaces box planeTilt
 
 [fluid]

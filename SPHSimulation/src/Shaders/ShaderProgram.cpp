@@ -52,12 +52,17 @@ ShaderProgram* ShaderProgram::CreateShader( const string& vertex, const string& 
 
 ShaderProgram* ShaderProgram::CreateShader( const string& vertex, const string& geometry, const string& fragment, bool doLink )
 {
-	std::string entry = vertex + geometry + fragment;
+	std::string entry = vertex + geometry +fragment;
 	auto shaderIt = shaderCache.find( entry );
+	
 	if( shaderIt == shaderCache.end() )
 	{
 		ShaderProgram* program = new ShaderProgram( vertex, geometry, fragment, doLink );
+		if (entry == "data/shaders/mc.vertdata/shaders/mc.geomdata/shaders/mc.frag") {
+			
+		}
 		shaderCache[entry] = program;
+		
 		return program;
 	}
 	return shaderIt->second;
@@ -99,12 +104,14 @@ void ShaderProgram::initMembers( const string& vertex, const string& geometry, c
 	}
 	linkedOk = false;
 	//uniformLocations = map< string, GLint >();
-
+	
 	cout << " Compiling shader sources: " << endl;		
 	cout << "* VERTEX: " << vertex << endl;
 	addShader( vertex );
+
 	cout << "* GEOMETRY: " << geometry << endl;
 	addShader( geometry );
+	
 	cout << "* FRAGMENT: " << fragment << endl;
 	addShader( fragment );
 			

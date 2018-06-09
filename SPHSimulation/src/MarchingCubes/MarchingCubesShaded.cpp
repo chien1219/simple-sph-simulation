@@ -17,7 +17,8 @@ MarchingCubesShaded::MarchingCubesShaded( const char* filePath )
 
 	vPosition = paramFile.getData("base","position").getVec3();	
 	vSpan = paramFile.getData("base","span").getVec3();	
-		
+	
+	
 	dataWidth = paramFile.getData("base","dataWidth").get<int>();
 	dataHeight = paramFile.getData("base","dataHeight").get<int>();
 	dataDepth = paramFile.getData("base","dataDepth").get<int>();
@@ -31,9 +32,9 @@ MarchingCubesShaded::MarchingCubesShaded( const char* filePath )
 	string vertex = paramFile.getData("shaders", "v").getStringData();
 	string geometry = paramFile.getData("shaders", "g").getStringData();
 	string fragment = paramFile.getData("shaders", "f").getStringData();
-
-	mcShader = ShaderProgram::CreateShader( vertex, geometry, fragment );
-
+	
+	mcShader = ShaderProgram::CreateShader( vertex, geometry, fragment);
+	
 	GLuint programHandle = mcShader->getProgramID();
 
 	initDataField( );	

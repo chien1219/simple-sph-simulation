@@ -28,7 +28,7 @@ SPHScene::SPHScene(void) : Scene(),
 	marchingCubes = new MarchingCubesShaded("data/mCubesShaded.txt");
 	marchingCubes->transform.setPosition({ 0.0f,0.0f,0.0f });
 	marchingCubes->transform.setScale(marchingCubes->getScale());
-
+	
 	pointVisualizer = new PointDataVisualiser("data/images/point.png", true);
 	pointVisualizer->transform.setPosition({ 0.0f,0.5f,0.0f });
 	pointVisualizer->transform.setScale({ 1.0f, 1.0f, -1.0f });
@@ -39,7 +39,7 @@ SPHScene::SPHScene(void) : Scene(),
 	if (fontLoaded)
 	{
 		status.setFont(anonPro);
-		status.setCharacterSize(18);
+		status.setCharacterSize(14);
 		status.setColor(sf::Color::White);
 		status.setPosition(0, 0);
 	}
@@ -82,16 +82,18 @@ void SPHScene::eventKeyboardUp(sf::Keyboard::Key keyPressed)
 							
 		case sf::Keyboard::L:
 					{
-						float o =0;
-						float d = 1;
-						sph3->addParticle( glm::vec3( 3, 5, 2 ), glm::vec3( 0,-2,-2 ) );
-						sph3->addParticle( glm::vec3( 3, 6, 2 ), glm::vec3( 0,-2,-2 ) );
-						sph3->addParticle( glm::vec3( 2, 6, 2 ), glm::vec3( 0,-2,-2 ) );
-						sph3->addParticle( glm::vec3( 2, 5, 2 ), glm::vec3( 0,-2,-2 ) );
-						sph3->addParticle( glm::vec3( 3, 5, 3 ), glm::vec3( 0,-2,-2 ) );
-						sph3->addParticle( glm::vec3( 3, 6, 3 ), glm::vec3( 0,-2,-2 ) );
-						sph3->addParticle( glm::vec3( 2, 6, 3 ), glm::vec3( 0,-2,-2 ) );
-						sph3->addParticle( glm::vec3( 2, 5, 3 ), glm::vec3( 0,-2,-2 ) );
+						for(int i = 0; i< 2;i++){
+							float o =0;
+							float d = 1;
+							sph3->addParticle( glm::vec3( 3, 5, 2 ), glm::vec3( 0,-2,-2 ) );
+							sph3->addParticle( glm::vec3( 3, 6, 2 ), glm::vec3( 0,-2,-2 ) );
+							sph3->addParticle( glm::vec3( 2, 6, 2 ), glm::vec3( 0,-2,-2 ) );
+							sph3->addParticle( glm::vec3( 2, 5, 2 ), glm::vec3( 0,-2,-2 ) );
+							sph3->addParticle( glm::vec3( 3, 5, 3 ), glm::vec3( 0,-2,-2 ) );
+							sph3->addParticle( glm::vec3( 3, 6, 3 ), glm::vec3( 0,-2,-2 ) );
+							sph3->addParticle( glm::vec3( 2, 6, 3 ), glm::vec3( 0,-2,-2 ) );
+							sph3->addParticle( glm::vec3( 2, 5, 3 ), glm::vec3( 0,-2,-2 ) );
+						}
 					}
 					break;
 
@@ -207,7 +209,7 @@ void SPHScene::draw(const Camera & camera)
 	glEnable(GL_DEPTH_TEST);
 
 	grid->draw(camera.getViewProjection());
-	coords->draw(camera.getViewProjection());
+//	coords->draw(camera.getViewProjection());
 			
 	marchingTimer.resume();	
 	if(drawWithMC)

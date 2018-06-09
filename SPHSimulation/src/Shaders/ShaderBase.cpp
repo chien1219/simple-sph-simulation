@@ -29,7 +29,7 @@ ShaderBase::ShaderBase(const std::string& filePath)
 	{
 		cerr << "Shader compilation failed, shader ID: " << shaderID << endl;
 		printLog( );
-		exit( -1 );
+		//exit( -1 );
 	}else
 	{
 		printLog();

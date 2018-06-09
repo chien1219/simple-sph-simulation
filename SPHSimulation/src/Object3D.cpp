@@ -9,6 +9,7 @@
 Object3D::Object3D() : transform()
 {
 	program = ShaderProgram::CreateBase3DShader();
+	
 	attrVertexColor = program->getAttribute("v_color");
 	attrVertexPosition = program->getAttribute("position");
 

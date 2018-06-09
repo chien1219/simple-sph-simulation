@@ -36,7 +36,7 @@ void loadGLEW()
 	printf("GL Version (string)  : %s\n", version);
 	printf("GL Version (integer) : %d.%d\n", major, minor);
 	printf("GLSL Version : %s\n", glslVersion);  
-	
+
 /*	if( GLEW_EXT_geometry_shader4 || GLEW_ARB_geometry_shader4 )
 	{
 		cout << "Geometry shader supported." << endl;
@@ -89,7 +89,7 @@ void WindowManager::run()
 	windowWillRun();
 	window->setVerticalSyncEnabled(true);
 	window->setKeyRepeatEnabled(false);
-
+	
 	sf::Clock windowClock;
 	sf::Time lastDrawTime = windowClock.getElapsedTime();
 	do
@@ -125,13 +125,13 @@ void WindowManager::run()
 				eventMouseWheel( Event.mouseWheel );
 			}
         }
-
+	
 		if( !window->isOpen() || shouldClose )
 		{			
 			windowWillClose();
 			break; 
 		}
-			
+
 		float dt = (windowClock.getElapsedTime().asMicroseconds() - lastDrawTime.asMicroseconds()) / 1000000.0f;		
 		lastDrawTime = windowClock.getElapsedTime();
 		updateScene( dt );
@@ -216,4 +216,5 @@ void WindowManager::drawCycle()
 	window->popGLStates();	
         
     window->display();
+
 }
