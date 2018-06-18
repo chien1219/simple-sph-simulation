@@ -8,6 +8,7 @@ class SPHSystem3d;
 class PointDataVisualiser;
 class MarchingCubesShaded;
 class LineGrid;
+class Interactor;
 
 class SPHScene :
 	public Scene
@@ -21,13 +22,18 @@ public:
 	void update(float dt);
 	virtual void eventKeyboardUp(sf::Keyboard::Key keyPressed);
 
+
 private:
 	SPHSystem3d* sph3;
 	PointDataVisualiser* pointVisualizer;
 	MarchingCubesShaded *marchingCubes;
 	LineGrid* grid;
 	LineGrid* coords;
-	
+
+	//Costumize
+	bool interactored;
+	Interactor* interactor;
+
 	IntervalAverageTimer sphTimer;
 	IntervalAverageTimer marchingTimer;
 	FPSTimer fpsTimer;

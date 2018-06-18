@@ -108,4 +108,5 @@ glm::vec3 SPHAABBInteractor3d::directionTo( SPHParticle3d& other )
 void SPHAABBInteractor3d::draw()
 {	
 	// TODO: draw interactors
+	std::cout<<"here?"<<std::endl;
 }

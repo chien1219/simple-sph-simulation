@@ -7,6 +7,8 @@
 #include "ShaderProgram.h"
 #include "Camera.h"
 #include "LineGrid.h"
+#include "Interactor.h"
+#include <glm\gtc\matrix_transform.hpp>
 
 using namespace std;
 
@@ -14,7 +16,8 @@ SPHScene::SPHScene(void) : Scene(),
 	paused(false),
 	sphTimer(3), marchingTimer(3),
 	drawWithMC(false),
-	fpsTimer(1.0)
+	fpsTimer(1.0),
+	interactored(false)
 {
 	sph3 = new SPHSystem3d("data/sph3d.txt");
 	cout << "SPH particle size: " << sizeof(SPHParticle3d) << endl;
@@ -43,6 +46,10 @@ SPHScene::SPHScene(void) : Scene(),
 		status.setColor(sf::Color::White);
 		status.setPosition(0, 0);
 	}
+
+	//Costumize
+	interactor = new Interactor();
+
 }
 
 SPHScene::~SPHScene(void)
@@ -58,6 +65,11 @@ void SPHScene::eventKeyboardUp(sf::Keyboard::Key keyPressed)
 {
 	switch (keyPressed)
 	{
+		case sf::Keyboard::Num9:
+			interactor->addInteractor(glm::vec3(7, 7, 5), glm::vec3(0, 5, 0));
+			interactored = !interactored;
+			break;
+
 		case sf::Keyboard::Add: 
 					treshold = contain<float>( treshold+0.01f, 0, 2 );
 					marchingCubes->setTreshold( treshold );
@@ -208,8 +220,8 @@ void SPHScene::draw(const Camera & camera)
 	glDepthFunc(GL_LESS);
 	glEnable(GL_DEPTH_TEST);
 
-//	grid->draw(camera.getViewProjection());
-//	coords->draw(camera.getViewProjection());
+	//grid->draw(camera.getViewProjection());
+	coords->draw(camera.getViewProjection());
 			
 	marchingTimer.resume();	
 	if(drawWithMC)
@@ -217,11 +229,19 @@ void SPHScene::draw(const Camera & camera)
 		marchingCubes->clear();
 		sph3->draw( marchingCubes );		
 		marchingCubes->draw( camera );		
+
 	}else
 	{	
 		sph3->draw( pointVisualizer );			
-		pointVisualizer->draw( camera );		
+		pointVisualizer->draw( camera );	
 	}
+
+	if (interactored) 
+	{
+		interactor->draw(marchingCubes, 2);
+		marchingCubes->draw(camera, interactor-> textureID);
+	}
+
 	marchingTimer.pause();
 }
 

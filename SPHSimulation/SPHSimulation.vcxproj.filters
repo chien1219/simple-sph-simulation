@@ -165,6 +165,9 @@
     <ClCompile Include="src\GlmVec.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Interactor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\AverageValue.h">
@@ -303,6 +306,9 @@
       <Filter>Header Files\LodePNG</Filter>
     </ClInclude>
     <ClInclude Include="src\GlmVec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Interactor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

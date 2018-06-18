@@ -133,7 +133,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Release\Win32\glew32.lib;opengl32.lib;sfml-graphics.lib;sfml-window.lib;sfml-system.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Release\Win32\glew32.lib;opengl32.lib;glu32.lib;sfml-graphics.lib;sfml-window.lib;sfml-system.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -160,6 +160,7 @@
     <ClCompile Include="src\DataLine.cpp" />
     <ClCompile Include="src\DataLineSet.cpp" />
     <ClCompile Include="src\GlmVec.cpp" />
+    <ClCompile Include="src\Interactor.cpp" />
     <ClCompile Include="src\LearningWindowManager.cpp" />
     <ClCompile Include="src\LineGrid.cpp" />
     <ClCompile Include="src\LodePNG\lodepng.cpp" />
@@ -202,6 +203,7 @@
     <ClInclude Include="src\DataLine.h" />
     <ClInclude Include="src\DataLineSet.h" />
     <ClInclude Include="src\GlmVec.h" />
+    <ClInclude Include="src\Interactor.h" />
     <ClInclude Include="src\IntervalAverageTimer.h" />
     <ClInclude Include="src\LearningWindowManager.h" />
     <ClInclude Include="src\LineGrid.h" />

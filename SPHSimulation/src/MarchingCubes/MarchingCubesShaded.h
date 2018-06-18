@@ -55,7 +55,8 @@ public:
 	void clear( );
 
 	void draw( const Camera& frustum );
-	
+	void draw(const Camera& frustum, GLuint tex);
+
 	void putSphere( float x, float y, float z, float r );
 
 	glm::vec3 getScale();
