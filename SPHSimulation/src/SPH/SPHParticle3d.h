@@ -10,13 +10,22 @@ struct SPHParticle3d
 {
 	SPHParticle3d() :
 		position(0), velocity(0), oldAcceleration(0),
-		mass(0), density(0), pressure(0), force(0)
+		mass(0), density(0), pressure(0), force(0),
+		isInteractor(false)
 	{}
 
 	SPHParticle3d(glm::vec3 pos, glm::vec3 v, float m, float density) :
 		position(pos), velocity(v), oldAcceleration(0),
 		mass(m), density(density), pressure(0), force(0),
-		colorGradient(0), colorLaplacian(0)
+		colorGradient(0), colorLaplacian(0),
+		isInteractor(false)
+	{}
+
+	SPHParticle3d(bool isInteractor, glm::vec3 pos, glm::vec3 v) :
+		position(pos), velocity(v), oldAcceleration(0),
+		mass(0), density(0), pressure(0), force(0),
+		colorGradient(0), colorLaplacian(0),
+		isInteractor(true)
 	{}
 
 	virtual void reset() 
@@ -29,6 +38,8 @@ struct SPHParticle3d
 		colorLaplacian = 0;
 	}
 
+	//Costumize
+	bool isInteractor;
 
 	glm::vec3 position;
 	glm::vec3 velocity;

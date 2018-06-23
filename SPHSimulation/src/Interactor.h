@@ -31,13 +31,12 @@ public:
 	Interactor();
 
 	int textureID;
-	void addInteractor(glm::vec3 position, glm::vec3 velocity);
+	void addInteractor(SPHParticle3d* SPHParticle);
 	void applyDensity(SPHParticle3d& other, glm::vec3 rvec);
 	void applyForce(SPHParticle3d& other, glm::vec3 rvec);
 	void enforceInteractor(SPHParticle3d& other, glm::vec3 rvec);
 	glm::vec3 directionTo(SPHParticle3d& other);
 	void draw();
-	void draw(MarchingCubesShaded* ms, float radius);
 	void putSphere(float x, float y, float z, float r);
 };
 

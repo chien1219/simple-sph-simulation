@@ -199,6 +199,11 @@ public:
 	void setSurfaceTension( float sTension );
 	
 	void paramOutput();
+
+	//Customize
+	SPHParticle3d* addInteractor(glm::vec3 position, glm::vec3 velocity);
+	int iteractorID = -1;
+	void applyInteractorForces(SPHParticle3d& particle);
 	
 };
 

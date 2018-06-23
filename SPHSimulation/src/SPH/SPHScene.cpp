@@ -66,8 +66,10 @@ void SPHScene::eventKeyboardUp(sf::Keyboard::Key keyPressed)
 	switch (keyPressed)
 	{
 		case sf::Keyboard::Num9:
-			interactor->addInteractor(glm::vec3(7, 7, 5), glm::vec3(0, 5, 0));
-			interactored = !interactored;
+			if (!interactored){
+				interactor->addInteractor(sph3->addInteractor(glm::vec3(7, 7, 5), glm::vec3(0, 5, 0)));
+				interactored = true;
+			}
 			break;
 
 		case sf::Keyboard::Add: 
@@ -221,7 +223,7 @@ void SPHScene::draw(const Camera & camera)
 	glEnable(GL_DEPTH_TEST);
 
 	//grid->draw(camera.getViewProjection());
-	coords->draw(camera.getViewProjection());
+	//coords->draw(camera.getViewProjection());
 			
 	marchingTimer.resume();	
 	if(drawWithMC)
@@ -238,8 +240,8 @@ void SPHScene::draw(const Camera & camera)
 
 	if (interactored) 
 	{
-		interactor->draw(marchingCubes, 2);
-		marchingCubes->draw(camera, interactor-> textureID);
+		//interactor->draw(marchingCubes, 2);
+		//marchingCubes->draw(camera, interactor-> textureID);
 	}
 
 	marchingTimer.pause();

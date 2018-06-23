@@ -130,22 +130,12 @@ void Interactor::setImage(const char* texturePath)
 		return;
 	}
 	textureID = TextureManager::instance.loadTexture(texturePath);
-	std::cout<<"ID: "<<textureID<<std::endl;
 }
 
 
-void Interactor::draw(MarchingCubesShaded* ms, float radius)
-{
-	// TODO: draw interactors
-	marchingCubes = ms;
-	marchingCubes->putSphere(interactor_->position.x, interactor_->position.y, interactor_->position.z, radius);
-}
+void Interactor::addInteractor(SPHParticle3d* SPHParticle) {
 
-
-void Interactor::addInteractor(glm::vec3 position, glm::vec3 velocity) {
-
-	position = glm::clamp(position, glm::vec3(0, 0, 0), glm::vec3(10, 10, 10));
-	interactor_ =  new SPHParticle3d(position, velocity, 100, 0);
+	interactor_ = SPHParticle;
 }
 
 void Interactor::putSphere(float x, float y, float z, float r)

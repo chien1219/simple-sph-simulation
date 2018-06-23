@@ -196,6 +196,22 @@ void SPHSystem3d::addParticle( glm::vec3 position, glm::vec3 velocity )
 	particleCount++;	
 }
 
+//Customize
+SPHParticle3d* SPHSystem3d::addInteractor(glm::vec3 position, glm::vec3 velocity)
+{
+	position = glm::clamp(position, glm::vec3(0, 0, 0), glm::vec3(dWidth, dHeight, dDepth));
+	SPHParticle3d* interactor = new SPHParticle3d(true, position, velocity);
+	interactor->density = 0.5;
+	interactor->mass = 6.28;
+	interactor->volume = 12.56;	// r = 2
+	particles.push_back(*interactor);
+	putParticleIntoGrid(particleCount);
+	iteractorID = particleCount;
+	particleCount++;
+	return interactor;
+}
+
+
 void SPHSystem3d::addSurface(std::unique_ptr<SPHInteractor3d>& surface )
 {
 	surfaces.push_back( std::move(surface) );
@@ -326,8 +342,53 @@ void SPHSystem3d::applySurfaceForces( SPHParticle3d& particle )
 				rSq = 0.000003f;
 			}/**/
 
+			//Customize
+			if(!particle.isInteractor){
+
+				oldForce = particle.force;
+				if( _isnan(particle.force.x) == 1 ) 	
+				{
+					cout << "1";
+				}
+				// pressure
+				//particle.force += ksgradient( rvec ) * particleMass * particle.pressure / particle.density;
+				float pressure = particle.pressure;
+				//float pressure = particle.pressure < 0 ? -particle.pressure : particle.pressure;
+				particle.force += (ksgradient( rvec ) * pressure * particle.volume)*0.5f;
+				if( _isnan(particle.force.x) == 1 ) 	
+				{
+					//cout << "2";
+				}
+				// viscosity
+				//particle.force -= ( particle.velocity ) * (kvlaplacian( sqrtf(rSq) ) * viscosityConstant * particleMass / particle.density);
+				particle.force += ( particle.velocity ) * (kvlaplacian( sqrtf(rSq) ) * viscosityConstant * particle.volume);
+				if( _isnan(particle.force.x) == 1 ) 	
+				{
+					//cout << "3";
+					particle.force = oldForce;
+				}
+			}
+		}
+	}
+}
+//Customize
+void SPHSystem3d::applyInteractorForces(SPHParticle3d& particle)
+{
+	if (iteractorID == -1);
+	else {
+		SPHParticle3d interactor_ = particles[iteractorID];
+		glm::vec3 rvec;
+
+		rvec = particle.position - interactor_.position + glm::vec3(1.161f, 1.161f, 1.161f);
+
+		float rSq;
+		glm::vec3 oldForce;
+	
+		rSq = glm::length2(rvec);
+		if (rSq < hSquared)
+		{
 			oldForce = particle.force;
-			if( _isnan(particle.force.x) == 1 ) 	
+			if (_isnan(particle.force.x) == 1)
 			{
 				cout << "1";
 			}
@@ -335,18 +396,39 @@ void SPHSystem3d::applySurfaceForces( SPHParticle3d& particle )
 			//particle.force += ksgradient( rvec ) * particleMass * particle.pressure / particle.density;
 			float pressure = particle.pressure;
 			//float pressure = particle.pressure < 0 ? -particle.pressure : particle.pressure;
-			particle.force += (ksgradient( rvec ) * pressure * particle.volume)*0.5f;
-			if( _isnan(particle.force.x) == 1 ) 	
+			particle.force += (ksgradient(rvec) * pressure * particle.volume)*0.5f;
+			if (_isnan(particle.force.x) == 1)
 			{
 				//cout << "2";
 			}
 			// viscosity
 			//particle.force -= ( particle.velocity ) * (kvlaplacian( sqrtf(rSq) ) * viscosityConstant * particleMass / particle.density);
-			particle.force += ( particle.velocity ) * (kvlaplacian( sqrtf(rSq) ) * viscosityConstant * particle.volume);
-			if( _isnan(particle.force.x) == 1 ) 	
+			particle.force += (particle.velocity) * (kvlaplacian(sqrtf(rSq)) * viscosityConstant * particle.volume);
+			if (_isnan(particle.force.x) == 1)
 			{
 				//cout << "3";
 				particle.force = oldForce;
+			}			
+		}
+
+		if (glm::length(rvec) <= 2.001f)
+		{	// outside - move inside
+			//other.position = glm::clamp(other.position, min, max);
+			particle.position += rvec * 0.05f;
+			if (rvec.x != 0)
+			{
+				particle.velocity.x = -particle.velocity.x;
+				//other.position.x -= rvec.x;
+			}
+			if (rvec.y != 0)
+			{
+				particle.velocity.y = -particle.velocity.y;
+				//other.position.y -= rvec.y;
+			}
+			if (rvec.z != 0)
+			{
+				particle.velocity.z = -particle.velocity.z;
+				//other.position.z -= rvec.z;
 			}
 		}
 	}
@@ -431,6 +513,9 @@ void SPHSystem3d::densityUpdate()
 	for(int i=0; i<particleCount; i++)
 	{		
 		SPHParticle3d& particle = particles[i];
+		if (particle.isInteractor)
+			continue;
+			
 		// particle - particle 
 		//particles[i].density = particleMass;	// this creates problems, without it it is even worse
 		particle.density += 1;//*restDensity;
@@ -454,6 +539,9 @@ void SPHSystem3d::animate( float dt )
 	for(int i=0; i<particleCount; i++)
 	{
 		particles[i].reset();
+		//Customize
+		if (particles[i].isInteractor)
+			particles[i].density = 0.5;
 	}
 	glm::vec3 rvec;
 
@@ -513,6 +601,8 @@ void SPHSystem3d::animate( float dt )
 			cout << "1";
 			wasOK = false;
 		}
+
+		applyInteractorForces( particle );
 
 		// if number changed status, from beeing ok to not beeing ok
 		// or if it became ok after beeing false, which will not happen
@@ -604,6 +694,7 @@ void SPHSystem3d::draw( MarchingCubesBasic* ms )
 		//r = particles[i].volume;
 		r = unitRadius;
 		if( r>smoothingLength ) r = smoothingLength;
+		if (particles[i].isInteractor) r = 2;
 		ms->putSphere( particles[i].position.x, particles[i].position.y, particles[i].position.z, r );
 	}
 }
@@ -618,6 +709,7 @@ void SPHSystem3d::draw( MarchingCubesShaded* ms )
 		//r = particles[i].volume;
 		r = unitRadius;
 		if( r>smoothingLength ) r = smoothingLength;
+		if (particles[i].isInteractor) r = 2;
 		ms->putSphere( particles[i].position.x, particles[i].position.y, particles[i].position.z, r );
 	}
 }
@@ -626,6 +718,9 @@ void SPHSystem3d::draw( MarchingCubesShaded* ms )
 void SPHSystem3d::draw( PointDataVisualiser* pdv )
 {
 	unitRadius = sqrt(particleMass / (restDensity*PI));
+	
+	//Customize
+	unitRadius = 0.2f;
 	pdv->setPointSize( unitRadius );
 	pdv->clearBuffer();
 	for(int i=0; i<particleCount; i++)
