@@ -231,8 +231,8 @@ void MarchingCubesShaded::draw(const Camera& camera)
 		mcShader->setUniformV3( "Eye", eye.x, eye.y, eye.z );
 		mcShader->setUniformM4( "MVP", glm::value_ptr(mvp) );
 	
-		MarchingCubesFactory::setTexture( GL_TEXTURE1 );
-	
+		MarchingCubesFactory::setTexture( GL_TEXTURE1 );	//33985
+
 		glEnable( GL_TEXTURE_3D );
 		glActiveTexture( GL_TEXTURE0 );
 		glBindTexture( GL_TEXTURE_3D, dataTexID );
@@ -262,48 +262,4 @@ void MarchingCubesShaded::draw(const Camera& camera)
 		//glBindTexture(GL_TEXTURE_2D, 0);
 	mcShader->turnOff();
 	glEnable( GL_CULL_FACE );
-}
-
-void MarchingCubesShaded::draw(const Camera& camera, GLuint tex)
-{
-	glm::mat4 mvp = camera.getViewProjection() * transform.getTransformMatrix();
-	glm::vec3 eye = camera.getPosition();
-
-	glDisable(GL_CULL_FACE);
-	mcShader->turnOn();
-	mcShader->setUniformF("Treshold", this->treshold);
-	mcShader->setUniformV3("Eye", eye.x, eye.y, eye.z);
-	mcShader->setUniformM4("MVP", glm::value_ptr(mvp));
-
-	MarchingCubesFactory::setTexture(GL_TEXTURE1);
-
-	glEnable(GL_TEXTURE_3D);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_3D, tex);
-	if (dataChanged)
-	{
-		glTexImage3D(GL_TEXTURE_3D, 0, GL_ALPHA32F_ARB, dataWidth, dataHeight, dataDepth, 0, GL_ALPHA, GL_FLOAT, dataField);
-		dataChanged = false;
-	}
-
-	// !
-	GLboolean blendEnabled = glIsEnabled(GL_BLEND);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_ONE, GL_ONE);
-	glDepthMask(GL_FALSE);
-	glBindVertexArray(gridVao);
-	glDrawArrays(GL_POINTS, 0, gridElementCount);
-	glBindVertexArray(0);
-	glDepthMask(GL_TRUE);
-	if (!blendEnabled) {
-		glDisable(GL_BLEND);
-	}
-
-	glDisable(GL_TEXTURE_3D);
-
-	//glEnable(GL_TEXTURE_2D);
-	//glActiveTexture(GL_TEXTURE1);
-	//glBindTexture(GL_TEXTURE_2D, 0);
-	mcShader->turnOff();
-	glEnable(GL_CULL_FACE);
 }

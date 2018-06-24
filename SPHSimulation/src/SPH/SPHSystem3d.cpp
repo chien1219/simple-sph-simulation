@@ -207,6 +207,7 @@ SPHParticle3d* SPHSystem3d::addInteractor(glm::vec3 position, glm::vec3 velocity
 	particles.push_back(*interactor);
 	putParticleIntoGrid(particleCount);
 	iteractorID = particleCount;
+	cout << "Iteractor ID: " << iteractorID << endl;
 	particleCount++;
 	return interactor;
 }
@@ -379,13 +380,13 @@ void SPHSystem3d::applyInteractorForces(SPHParticle3d& particle)
 		SPHParticle3d interactor_ = particles[iteractorID];
 		glm::vec3 rvec;
 
-		rvec = particle.position - interactor_.position + glm::vec3(1.161f, 1.161f, 1.161f);
+		rvec = particle.position - interactor_.position;  // + glm::vec3(1.161f, 1.161f, 1.161f)
 
 		float rSq;
 		glm::vec3 oldForce;
 	
 		rSq = glm::length2(rvec);
-		if (rSq < hSquared)
+		if (rSq < 16)
 		{
 			oldForce = particle.force;
 			if (_isnan(particle.force.x) == 1)
@@ -709,7 +710,7 @@ void SPHSystem3d::draw( MarchingCubesShaded* ms )
 		//r = particles[i].volume;
 		r = unitRadius;
 		if( r>smoothingLength ) r = smoothingLength;
-		if (particles[i].isInteractor) r = 2;
+		if (particles[i].isInteractor) continue;
 		ms->putSphere( particles[i].position.x, particles[i].position.y, particles[i].position.z, r );
 	}
 }
@@ -725,12 +726,16 @@ void SPHSystem3d::draw( PointDataVisualiser* pdv )
 	pdv->clearBuffer();
 	for(int i=0; i<particleCount; i++)
 	{
+		//if (particles[i].isInteractor) continue;
 		pdv->pushPoint( particles[i].position );
 	}
-	/*for( int i=0; i<surfaces.size(); i++)
-	{
-		surfaces[i]->draw();
-	}*/
+}
+
+void SPHSystem3d::draw(Interactor* in)
+{
+	in->setPointSize(2);
+	in->clearBuffer();
+	in->pushPoint( particles[iteractorID].position + glm::vec3(-2.05,1.2,1.9));
 }
 
 void SPHSystem3d::setUseGravity( bool value )

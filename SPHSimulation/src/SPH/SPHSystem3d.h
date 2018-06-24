@@ -8,6 +8,8 @@
 #include <memory>
 #include <glm\gtx\norm.hpp>
 
+#include "Interactor.h"
+
 //class iKernel;
 class MarchingCubes;
 class MarchingCubesBasic;
@@ -204,6 +206,7 @@ public:
 	SPHParticle3d* addInteractor(glm::vec3 position, glm::vec3 velocity);
 	int iteractorID = -1;
 	void applyInteractorForces(SPHParticle3d& particle);
+	void draw(Interactor* in);
 	
 };
 

@@ -32,6 +32,7 @@ private:
 
 	//Costumize
 	bool interactored;
+	bool interactorFlag;
 	Interactor* interactor;
 
 	IntervalAverageTimer sphTimer;

@@ -1,25 +1,54 @@
-#include "Interactor.h"
+﻿#include "Interactor.h"
 //Customize
 #include "SPHParticle3d.h"
 #include "TextureManager.h"
 #include "MarchingCubesShaded.h"
+#include "ShaderProgram.h"
 #include <iostream>
 #include <glm\common.hpp>
 #include <gl\glew.h>
 
-#include "MarchingCubesShaded.h"
-#include "MappedData.h"
 #include "ShaderProgram.h"
-#include "MarchingCubesFactory.h"
 #include "Camera.h"
 #include <glm\geometric.hpp>
 #include <glm\gtc\matrix_transform.hpp>
 #include <glm\gtc\type_ptr.hpp>
 
+#define BUFFER_SIZE_INC 64
 
-Interactor::Interactor()
+Interactor::Interactor():
+	bufferSize(BUFFER_SIZE_INC), buffer(new glm::vec3[BUFFER_SIZE_INC]), bufferElements(0),
+	textureID(0), bufferID(0), color({ 1.f,1.f,1.f }),
+	shader(nullptr), useShader(useShader && GLEW_ARB_geometry_shader4 == GL_TRUE),
+	pointSize(5.0f)
 {
-	setImage("data/images/point.png");
+	setImage("data/images/ball.png");
+
+	// Setup vao and vbo connections
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	// NULL => do not copy the buffer
+	glBufferData(GL_ARRAY_BUFFER, bufferSize * sizeof(float) * 3, NULL, GL_DYNAMIC_DRAW);
+
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (GLubyte *)NULL);
+
+		shader = ShaderProgram::CreateShader(
+			"data/shaders/interactor.vert",
+			"data/shaders/interactor.geom",
+			"data/shaders/interactor.frag",
+			true);
+	
+}
+
+Interactor::~Interactor()
+{
+	delete[] buffer;
+	glDeleteBuffers(1, &vbo);
+	glDeleteVertexArrays(1, &vao);
 }
 
 void Interactor::applyDensity(SPHParticle3d& other, glm::vec3 rvec)
@@ -138,86 +167,98 @@ void Interactor::addInteractor(SPHParticle3d* SPHParticle) {
 	interactor_ = SPHParticle;
 }
 
-void Interactor::putSphere(float x, float y, float z, float r)
+void Interactor::setColor(float r, float g, float b)
 {
-	float value;
+	color = glm::vec3(r, g, b);
+}
 
-	glm::vec3 vPosition = marchingCubes->getPosition();
-	glm::vec3 deltaSpan = marchingCubes->getScale();
+void Interactor::setPointSize(float size)
+{
+	pointSize = size;
+}
 
-	glm::vec3 start(x - r, y - r, z - r);
-	start -= vPosition;
-	start /= deltaSpan;
+void Interactor::clearBuffer()
+{
+	bufferElements = 0;
+}
 
-	glm::vec3 end(x + r, y + r, z + r);
-	end -= vPosition;
-	end /= deltaSpan;
+void Interactor::pushPoint(glm::vec3 point)
+{
+	pushPoint(point.x, point.y, point.z);
+}
 
-	glm::vec3 center = (glm::vec3(x, y, z) - vPosition) / deltaSpan;
-	r /= glm::length(deltaSpan);
-
-	glm::ivec3 iStart(start.x, start.y, start.z);
-	glm::ivec3 iEnd(end.x + 1, end.y + 1, end.z + 1);
-	for (int i = iStart.x; i<iEnd.x; i++)
+void Interactor::pushPoint(float x, float y, float z)
+{
+	bool resize = bufferElements + 1 > bufferSize;
+	if (resize)
 	{
-		for (int j = iStart.y; j<iEnd.y; j++)
-		{
-			for (int k = iStart.z; k<iEnd.z; k++)
-			{
-				value = r - glm::length(center - glm::vec3(i, j, k)) + 1;
-				if (value > 0)
-				{
-					//set(i, j, k, value);
-				}
-			}
-		}
+		int newSize = bufferSize + BUFFER_SIZE_INC;
+		glm::vec3 *newBuffer = new glm::vec3[newSize];
+		memcpy_s(newBuffer, newSize * sizeof(glm::vec3), buffer, bufferElements * sizeof(glm::vec3));
+		delete[] buffer;
+		buffer = newBuffer;
+		bufferSize = newSize;
+
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		// NULL => do not copy the buffer
+		glBufferData(GL_ARRAY_BUFFER, bufferSize * sizeof(float) * 3, NULL, GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
+	buffer[bufferElements] = glm::vec3(x, y, z);
+	bufferElements++;
 }
 
-/*
-
-void Interactor::mySolidCylinder(GLUquadric*   quad, GLdouble base,
-	GLdouble top,
-	GLdouble height,
-	GLint slices,
-	GLint stacks)
+void Interactor::drawArray()
 {
-	glColor3f(84.0 / 255, 0.0, 125.0 / 255.0);
-	gluCylinder(quad, base, top, height, slices, stacks);
-	//top   
-	//DrawCircleArea(0.0, 0.0, height, top, slices);
-	//base   
-	//DrawCircleArea(0.0, 0.0, 0.0, base, slices);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, bufferSize * sizeof(float) * 3, buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glBindVertexArray(vao);
+	glDrawArrays(GL_POINTS, 0, bufferElements);/**/
+	glBindVertexArray(0);
 }
 
-GLvoid Interactor::DrawCircleArea(float cx, float cy, float cz, float r, int num_segments)
+void Interactor::drawShaded(const Camera& camera)
 {
-	GLfloat vertex[4];
+	glDisable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
+	auto projection = camera.getProjection();
+	auto modelView = camera.getView() * transform.getTransformMatrix();
+	auto MVP = projection * modelView;
 
-	const GLfloat delta_angle = 2.0* 3.14159 / num_segments;
-	glBegin(GL_TRIANGLE_FAN);
+	auto up = camera.getUp();
 
-	vertex[0] = cx;
-	vertex[1] = cy;
-	vertex[2] = cz;
-	vertex[3] = 1.0;
-	glVertex4fv(vertex);
+	shader->turnOn();
+	shader->setUniformM4("ModelViewMatrix", glm::value_ptr(modelView));
+	shader->setUniformM4("ProjectionMatrix", glm::value_ptr(projection));
+	shader->setUniformM4("mvp", glm::value_ptr(MVP));
+	shader->setUniformV3("up", up.x, up.y, up.z);
+	shader->setUniformF("Size2", pointSize);
+	shader->setUniformI("SpriteTex", 0);
+	shader->setUniformV3("Color", color.x, color.y, color.z);
 
-	//draw the vertex on the contour of the circle   
-	for (int i = 0; i < num_segments; i++)
-	{
-		vertex[0] = std::cos(delta_angle*i) * r + cx;
-		vertex[1] = std::sin(delta_angle*i) * r + cy;
-		vertex[2] = cz;
-		vertex[3] = 1.0;
-		glVertex4fv(vertex);
-	}
+	drawArray();
+	shader->turnOff();
 
-	vertex[0] = 1.0 * r + cx;
-	vertex[1] = 0.0 * r + cy;
-	vertex[2] = cz;
-	vertex[3] = 1.0;
-	glVertex4fv(vertex);
-	glEnd();
+	glEnable(GL_CULL_FACE);
 }
-*/
+
+void Interactor::draw(const Camera& camera)
+{
+	ShaderProgram::turnOff();
+	glEnable(GL_TEXTURE_2D);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+
+	GLboolean blendEnabled = glIsEnabled(GL_BLEND);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_ONE, 0);
+	glDepthMask(GL_FALSE);
+	drawShaded(camera);
+
+	glDepthMask(GL_TRUE);
+	if (!blendEnabled) glDisable(GL_BLEND);
+
+	glDisable(GL_TEXTURE_2D);
+}

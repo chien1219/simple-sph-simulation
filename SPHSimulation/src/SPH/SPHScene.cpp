@@ -66,10 +66,11 @@ void SPHScene::eventKeyboardUp(sf::Keyboard::Key keyPressed)
 	switch (keyPressed)
 	{
 		case sf::Keyboard::Num9:
-			if (!interactored){
-				interactor->addInteractor(sph3->addInteractor(glm::vec3(7, 7, 5), glm::vec3(0, 5, 0)));
-				interactored = true;
+			if (!interactorFlag){
+				interactor->addInteractor(sph3->addInteractor(glm::vec3(5, 7, 5), glm::vec3(0, 3, 0)));
+				interactorFlag = true;
 			}
+			interactored = !interactored;
 			break;
 
 		case sf::Keyboard::Add: 
@@ -124,10 +125,10 @@ void SPHScene::eventKeyboardUp(sf::Keyboard::Key keyPressed)
 		case sf::Keyboard::F:	sph3->setK( sph3->getK() - 0.1f );
 					break;
 					/**/
-		case sf::Keyboard::T:	sph3->setViscosity(sph3->getViscosity() + 0.005f );
+		case sf::Keyboard::T:	sph3->setViscosity(sph3->getViscosity() + 0.05f );
 					break;
 
-		case sf::Keyboard::G:	sph3->setViscosity(sph3->getViscosity() - 0.005f );
+		case sf::Keyboard::G:	sph3->setViscosity(sph3->getViscosity() - 0.05f );
 					break;
 
 		case sf::Keyboard::Z:	sph3->setSmoothingLength(sph3->getSmoothingLength()+0.05f);
@@ -226,6 +227,13 @@ void SPHScene::draw(const Camera & camera)
 	//coords->draw(camera.getViewProjection());
 			
 	marchingTimer.resume();	
+
+	if (interactored)
+	{
+		sph3->draw(interactor);
+		interactor->draw(camera);
+	}
+
 	if(drawWithMC)
 	{
 		marchingCubes->clear();
@@ -236,12 +244,6 @@ void SPHScene::draw(const Camera & camera)
 	{	
 		sph3->draw( pointVisualizer );			
 		pointVisualizer->draw( camera );	
-	}
-
-	if (interactored) 
-	{
-		//interactor->draw(marchingCubes, 2);
-		//marchingCubes->draw(camera, interactor-> textureID);
 	}
 
 	marchingTimer.pause();
